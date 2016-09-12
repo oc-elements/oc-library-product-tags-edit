@@ -79,6 +79,10 @@ Element to edit library product tags on the Ordercloud platform
                   this.allProductTags = request[0].response.results;
                   this.menuTags = request[1].response.results;
 
+                  console.log('prod-tags', this.productTags)
+                  console.log('allprod-tags', this.allProductTags)
+                  console.log('menu-tags', this.menuTags)
+
                 }.bind(this))
                 .catch(this.fire.bind(this, 'options_error', 'Could not load tags'))
                 .finally(this.set.bind(this, 'loading', false));
@@ -95,20 +99,9 @@ Element to edit library product tags on the Ordercloud platform
         var tempObj = {};
 
         tempObj.name = this.product.name;
-        tempObj.shortDescription = this.product.shortDescription;
-        tempObj.enabled = this.product.enabled;
-        tempObj.extraSets = this.product.extraSets;
-        tempObj.optionSets = this.product.optionSets;
         tempObj.price = this.product.price;
-        tempObj.productType = this.product.productType;
-        tempObj.available = this.product.available;
-        tempObj.brandName = this.product.brandName;
-        tempObj.additionalInfo = this.product.additionalInfo;
-        tempObj.attributes = this.product.attributes;
-        tempObj.description = this.product.description;
-        tempObj.availableOnline = this.product.availableOnline;
 
-        tempObj.tags = e.detail;
+        tempObj.tags = e.detail.map(function(tag){ return { id: tag.id, name: tag.name} });
 
 
         this.$.prodApi.updateProduct(this.productId, tempObj)
@@ -129,16 +122,21 @@ Element to edit library product tags on the Ordercloud platform
       },
 
       _selectTag : function(e){
+
         var selectedTag = e.detail,
                 selectedTagId = selectedTag.id,
                 selectedTagType = selectedTag.tagType.name,
                 productSelected = this.productTags.filter(function(tag){ return (tag.id === selectedTagId && tag.tagType.name === selectedTagType)})[0];
+
+
         if(!productSelected) {
           this.push('productTags', e.detail);
+//          console.log(this.productTags);
         }
       },
 
       _removeTag : function(e){
+
         var selectedTag = e.detail,
                 selectedTagId = selectedTag.id,
                 selectedTagType = selectedTag.tagType.name,
